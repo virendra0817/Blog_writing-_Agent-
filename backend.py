@@ -11,13 +11,14 @@ from pydantic import BaseModel, Field
 
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Send
-from langchain_mistralai import ChatMistralAI
-from langchain_openai import ChatOpenAI
-from langchain_groq import ChatGroq
+
+
+
+import langchain_mistralai
 from langchain_core.messages import SystemMessage, HumanMessage
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(dotenv_path=r"V:\Blog_writing_agent\.env", override=True)
 
 # ============================================================
 # Blog Writer (Router → (Research?) → Orchestrator → Workers → ReducerWithImages)
@@ -114,9 +115,9 @@ class State(TypedDict):
 # -----------------------------
 # 2) LLM
 # -----------------------------
-llm = ChatMistralAI(model="mistral-medium-3-5",
-                     api_key="mistral_model",
-                     temperature=0)
+llm = langchain_mistralai.ChatMistralAI(model="mistral-medium-latest",
+                     api_key=os.getenv("MISTRAL_API_KEY"),
+                     temperature=0,timeout=60,max_retries=2)
 
 # -----------------------------
 # 3) Router
@@ -434,13 +435,19 @@ def _gemini_generate_image_bytes(prompt: str) -> bytes:
     Requires: pip install google-genai
     Env var: GOOGLE_API_KEY
     """
-    from google import genai
-    from google.genai import types
+    try:
+        from google import genai  # type: ignore[import]
+        from google.genai import types  # type: ignore[import]
+    except ImportError as exc:
+        raise RuntimeError(
+            "google-genai is required for image generation. Install with `pip install google-genai`."
+        ) from exc
 
-    GOOGLE_API_KEY = ""
+    
     api_key = os.environ.get("GOOGLE_API_KEY")
     if not api_key:
         raise RuntimeError("GOOGLE_API_KEY is not set.")
+    
 
     client = genai.Client(api_key=api_key)
 
