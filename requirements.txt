@@ -10,3 +10,4 @@ httpx
 tavily-python
 google-genai
 mistralai
+langchain-openai
