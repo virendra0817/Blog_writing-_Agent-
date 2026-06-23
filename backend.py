@@ -6,6 +6,7 @@ import re
 from datetime import date, timedelta
 from pathlib import Path
 from typing import TypedDict, List, Optional, Literal, Annotated
+from langchain_openai import ChatOpenAI
 
 from pydantic import BaseModel, Field
 
@@ -115,9 +116,12 @@ class State(TypedDict):
 # -----------------------------
 # 2) LLM
 # -----------------------------
-llm = langchain_mistralai.ChatMistralAI(model="mistral-medium-latest",
-                     api_key=os.getenv("MISTRAL_API_KEY"),
-                     temperature=0,timeout=60,max_retries=2)
+llm = ChatOpenAI(
+    model="deepseek-chat",
+    api_key=os.getenv("DEEPSEEK_API_KEY"),
+    base_url="https://api.deepseek.com",
+    temperature=0
+)
 
 # -----------------------------
 # 3) Router
