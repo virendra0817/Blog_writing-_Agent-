@@ -7,6 +7,7 @@ from datetime import date, timedelta
 from pathlib import Path
 from typing import TypedDict, List, Optional, Literal, Annotated
 from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 
 from pydantic import BaseModel, Field
 
@@ -116,13 +117,13 @@ class State(TypedDict):
 # -----------------------------
 # 2) LLM
 # -----------------------------
-llm = ChatOpenAI(
-    model="deepseek-chat",
-    api_key=os.getenv("DEEPSEEK_API_KEY"),
-    base_url="https://api.deepseek.com",
-    temperature=0
+llm = ChatGroq(
+    model="llama-3.3-70b-versatile",
+    api_key=os.getenv("GROQ_API_KEY"),
+    temperature=0,
+    max_tokens=1024,        
+    max_retries=2,
 )
-
 # -----------------------------
 # 3) Router
 # -----------------------------
